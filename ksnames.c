@@ -62,7 +62,7 @@ static ssize_t my_read(struct file *fp,
             DEVICE_NAME, names_size);
 
     return simple_read_from_buffer(buf, count, off,
-            names_buf, count); // TODO: FIX THIS
+            names_buf, names_size);
 }
 
 const static struct file_operations my_fops = {
@@ -104,6 +104,7 @@ static int __init my_init(void)
     u8 len;
     u8 *names_buf_cur;
     size_t sz;
+    size_t names_size_remain;
 
 
     num_syms_vaddr += kaslr_offset;
@@ -201,9 +202,10 @@ static int __init my_init(void)
     printk(KERN_INFO "%s: names_buf=%p\n",
         DEVICE_NAME, names_buf);
     names_buf_cur = names_buf;
+    names_size_remain = names_size;
 
-    while (names_size > 0) {
-        sz = size_inside_page(__pa(names_ptr), names_size);
+    while (names_size_remain > 0) {
+        sz = size_inside_page(__pa(names_ptr), names_size_remain);
 
         r = probe_kernel_read(names_buf_cur, names_ptr, sz);
         if (r < 0) {
@@ -212,7 +214,7 @@ static int __init my_init(void)
             goto failed_need_free;
         }
 
-        names_size -= sz;
+        names_size_remain -= sz;
         names_ptr += sz;
         names_buf_cur += sz;
     }
