@@ -1,4 +1,4 @@
-obj-m := ksnames.o
+obj-m := ksnames.o kstokentable.o
 KDIR := /lib/modules/$(shell uname -r)/build
 PWD := $(shell pwd)
 
