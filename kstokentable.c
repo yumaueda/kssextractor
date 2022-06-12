@@ -13,9 +13,9 @@
 #include <linux/version.h>
 
 #if LINUX_VERSION_CODE < KERNEL_VERSION(5,8,0)
-#define COPY_FROM_KERNEL probe_kernel_read
+#define COPY_FROM_KERNEL_NOFAULT probe_kernel_read
 #else
-#define COPY_FROM_KERNEL copy_from_kernel_nofault
+#define COPY_FROM_KERNEL_NOFAULT copy_from_kernel_nofault
 #endif
 
 #define DEVICE_NAME THIS_MODULE->name
@@ -95,7 +95,7 @@ static int __init my_init(void)
 
 
     token_table_vaddr += kaslr_offset;
-    token_table_ptr = 
+    token_table_ptr =
         token_table_ptr_start = (u8 *)token_table_vaddr;
     token_read_count = 0;
 
@@ -112,10 +112,10 @@ static int __init my_init(void)
 
     while (token_read_count != TOKEN_NUM) {
         // sizeof(e) == 1
-        r = COPY_FROM_KERNEL(&e,
+        r = COPY_FROM_KERNEL_NOFAULT(&e,
                 (void *)token_table_ptr, sizeof(e));
         if (r < 0) {
-            printk(KERN_ERR "%s: COPY_FROM_KERNEL \
+            printk(KERN_ERR "%s: COPY_FROM_KERNEL_NOFAULT \
                     ERROR CODE %ld\n", DEVICE_NAME, r);
             return r;
         }
@@ -168,9 +168,9 @@ static int __init my_init(void)
     while (token_table_size_remain > 0) {
         sz = size_inside_page(__pa(token_table_ptr), token_table_size_remain);
 
-        r = COPY_FROM_KERNEL(token_table_buf_cur, token_table_ptr, sz);
+        r = COPY_FROM_KERNEL_NOFAULT(token_table_buf_cur, token_table_ptr, sz);
         if (r < 0) {
-            printk(KERN_ERR "%s: COPY_FROM_KERNEL \
+            printk(KERN_ERR "%s: COPY_FROM_KERNEL_NOFAULT \
                     ERROR CODE %ld\n", DEVICE_NAME, r);
             goto failed_need_free;
         }

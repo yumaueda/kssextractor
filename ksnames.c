@@ -13,9 +13,9 @@
 #include <linux/version.h>
 
 #if LINUX_VERSION_CODE < KERNEL_VERSION(5,8,0)
-#define COPY_FROM_KERNEL probe_kernel_read
+#define COPY_FROM_KERNEL_NOFAULT probe_kernel_read
 #else
-#define COPY_FROM_KERNEL copy_from_kernel_nofault
+#define COPY_FROM_KERNEL_NOFAULT copy_from_kernel_nofault
 #endif
 
 #define DEVICE_NAME THIS_MODULE->name
@@ -114,10 +114,10 @@ static int __init my_init(void)
 
     // kallsyms_num_syms does not exist across pages
     // cuz of optimization done by compiler
-    r = COPY_FROM_KERNEL(&num_syms,
+    r = COPY_FROM_KERNEL_NOFAULT(&num_syms,
             (void *)num_syms_vaddr, sizeof(num_syms));
     if (r < 0) {
-        printk(KERN_ERR "%s: COPY_FROM_KERNEL \
+        printk(KERN_ERR "%s: COPY_FROM_KERNEL_NOFAULT \
                 ERROR CODE %ld\n", DEVICE_NAME, r);
         return r;
     }
@@ -150,10 +150,10 @@ static int __init my_init(void)
     // * len in kallsyms_names does not exist across pages
     // cuz its size is 1B
     for (i = 0; i < num_syms; i++) {
-        r = COPY_FROM_KERNEL(&len,
+        r = COPY_FROM_KERNEL_NOFAULT(&len,
                 (void *)names_ptr, sizeof(len));
         if (r < 0) {
-            printk(KERN_ERR "%s: COPY_FROM_KERNEL \
+            printk(KERN_ERR "%s: COPY_FROM_KERNEL_NOFAULT \
                     ERROR CODE %ld\n", DEVICE_NAME, r);
             return r;
         }
@@ -211,9 +211,9 @@ static int __init my_init(void)
     while (names_size_remain > 0) {
         sz = size_inside_page(__pa(names_ptr), names_size_remain);
 
-        r = COPY_FROM_KERNEL(names_buf_cur, names_ptr, sz);
+        r = COPY_FROM_KERNEL_NOFAULT(names_buf_cur, names_ptr, sz);
         if (r < 0) {
-            printk(KERN_ERR "%s: COPY_FROM_KERNEL \
+            printk(KERN_ERR "%s: COPY_FROM_KERNEL_NOFAULT \
                     ERROR CODE %ld\n", DEVICE_NAME, r);
             goto failed_need_free;
         }
