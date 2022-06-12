@@ -171,12 +171,14 @@ static int __init my_init(void)
             DEVICE_NAME, names_size);
 
 
-    // create a debugfs file
-    kallsyms_root = debugfs_create_dir("kallsyms", NULL);
-    if (IS_ERR(kallsyms_root)) {
-        printk(KERN_ERR "%s: debugfs_create_dir ERROR CODE \
-                %ld\n", DEVICE_NAME, PTR_ERR(kallsyms_root));
-        return (int)PTR_ERR(kallsyms_root);
+    if (!(kallsyms_root = debugfs_lookup("kallsyms", NULL))) {
+        // create a debugfs file
+        kallsyms_root = debugfs_create_dir("kallsyms", NULL);
+        if (IS_ERR(kallsyms_root)) {
+            printk(KERN_ERR "%s: debugfs_create_dir ERROR CODE \
+                    %ld\n", DEVICE_NAME, PTR_ERR(kallsyms_root));
+            return (int)PTR_ERR(kallsyms_root);
+        }
     }
 
     ksnames = debugfs_create_file(DEVICE_NAME, S_IRUSR,
