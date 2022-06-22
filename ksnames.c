@@ -125,7 +125,7 @@ static int __init my_init(void)
     names_ptr = names_ptr_start = (u8 *)names_vaddr;
 
 
-    printk(KERN_INFO "%s: Inserting kssextracter ksnames \
+    printk(KERN_INFO "%s: Inserting kssextractor ksnames \
             into the kernel ...\n", DEVICE_NAME);
     printk(KERN_INFO "%s: num_syms_vaddr=%lu\n",
             DEVICE_NAME, num_syms_vaddr);
@@ -239,7 +239,7 @@ failed_need_free:
 
 static void __exit my_exit(void)
 {
-    printk(KERN_INFO "%s: removing kssextracter ksnames \
+    printk(KERN_INFO "%s: removing kssextractor ksnames \
             from the kernel ...\n", DEVICE_NAME);
 
 

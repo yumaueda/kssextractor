@@ -100,7 +100,7 @@ static int __init my_init(void)
     token_read_count = 0;
 
 
-    printk(KERN_INFO "%s: Inserting kssextracter kstokentable \
+    printk(KERN_INFO "%s: Inserting kssextractor kstokentable \
             into the kernel ...\n", DEVICE_NAME);
     printk(KERN_INFO "%s: token_table_vaddr=%lu\n",
             DEVICE_NAME, token_table_vaddr);
@@ -196,7 +196,7 @@ failed_need_free:
 
 static void __exit my_exit(void)
 {
-    printk(KERN_INFO "%s: removing kssextracter kstokentable \
+    printk(KERN_INFO "%s: removing kssextractor kstokentable \
             from the kernel ...\n", DEVICE_NAME);
 
 
