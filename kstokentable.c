@@ -130,7 +130,10 @@ static int __init my_init(void)
             DEVICE_NAME, token_table_size);
 
 
+
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(4,11,0)
     if (!(kallsyms_root = debugfs_lookup("kallsyms", NULL))) {
+#endif
         // create a debugfs file
         kallsyms_root = debugfs_create_dir("kallsyms", NULL);
         if (IS_ERR(kallsyms_root)) {
@@ -138,7 +141,9 @@ static int __init my_init(void)
                     %ld\n", DEVICE_NAME, PTR_ERR(kallsyms_root));
             return (int)PTR_ERR(kallsyms_root);
         }
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(4,11,0)
     }
+#endif
 
     kstokentable = debugfs_create_file(DEVICE_NAME, S_IRUSR,
             kallsyms_root, NULL, &my_fops);
